@@ -1,0 +1,57 @@
++ ulimit -n 65535
+++ pwd
++ PROJECT_DIR=/home/robin/verl
++ CONFIG_PATH=/home/robin/verl/examples/sglang_multiturn/config
++ TRAIN_DATA=/root/data/searchR1_processed_direct/train.parquet
++ VAL_DATA=/root/data/searchR1_processed_direct/test.parquet
++ TOOL_CONFIG=/home/robin/verl/examples/sglang_multiturn/config/tool_config/search_tool_config.yaml
++ python3 -m verl.trainer.main_ppo --config-path=/home/robin/verl/examples/sglang_multiturn/config --config-name=search_multiturn_grpo algorithm.adv_estimator=grpo data.train_batch_size=512 data.val_batch_size=256 data.max_prompt_length=4096 data.max_response_length=3000 data.filter_overlong_prompts=True data.truncation=error data.return_raw_chat=True actor_rollout_ref.model.path=Qwen/Qwen2.5-3B-Instruct actor_rollout_ref.actor.optim.lr=1e-6 actor_rollout_ref.actor.optim.lr_warmup_steps_ratio=0.285 actor_rollout_ref.model.use_remove_padding=True actor_rollout_ref.actor.ppo_mini_batch_size=256 actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=8 actor_rollout_ref.actor.use_kl_loss=True actor_rollout_ref.actor.kl_loss_coef=0.001 actor_rollout_ref.actor.kl_loss_type=low_var_kl actor_rollout_ref.actor.entropy_coeff=0 actor_rollout_ref.model.enable_gradient_checkpointing=True actor_rollout_ref.actor.fsdp_config.param_offload=False actor_rollout_ref.actor.fsdp_config.optimizer_offload=False actor_rollout_ref.rollout.max_model_len=15000 actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=8 actor_rollout_ref.rollout.tensor_model_parallel_size=1 actor_rollout_ref.rollout.name=sglang_async actor_rollout_ref.rollout.gpu_memory_utilization=0.5 actor_rollout_ref.rollout.n=5 actor_rollout_ref.rollout.multi_turn.max_turns=2 actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=8 actor_rollout_ref.ref.fsdp_config.param_offload=True algorithm.use_kl_in_reward=False trainer.critic_warmup=0 trainer.val_before_train=False 'trainer.logger=[console,wandb]' trainer.project_name=search_r1_like_async_rl trainer.experiment_name=qwen2.5-3b-instruct_function_rm-search-async-sgl-multi-w-searchtool-verify-n16 trainer.n_gpus_per_node=8 trainer.nnodes=1 trainer.save_freq=100 trainer.test_freq=50 data.train_files=/root/data/searchR1_processed_direct/train.parquet data.val_files=/root/data/searchR1_processed_direct/test.parquet actor_rollout_ref.rollout.multi_turn.tool_config_path=/home/robin/verl/examples/sglang_multiturn/config/tool_config/search_tool_config.yaml trainer.total_epochs=1 Add commentMore actions
+/home/robin/verl/verl/__init__.py:17: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Traceback (most recent call last):
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 2045, in __getattr__
+    module = self._get_module(self._class_to_module[name])
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 2075, in _get_module
+    raise e
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 2073, in _get_module
+    return importlib.import_module("." + module_name, self.__name__)
+  File "/opt/conda/envs/verl/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/transformers/processing_utils.py", line 35, in <module>
+    from .image_utils import ChannelDimension, ImageInput, is_valid_image, is_vision_available, load_image
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/transformers/image_utils.py", line 59, in <module>
+    from torchvision.transforms import InterpolationMode
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/torchvision/__init__.py", line 10, in <module>
+    from torchvision import _meta_registrations, datasets, io, models, ops, transforms, utils  # usort:skip
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/torchvision/_meta_registrations.py", line 164, in <module>
+    def meta_nms(dets, scores, iou_threshold):
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/torch/library.py", line 1023, in register
+    use_lib._register_fake(op_name, func, _stacklevel=stacklevel + 1)
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/torch/library.py", line 214, in _register_fake
+    handle = entry.fake_impl.register(func_to_register, source)
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/torch/_library/fake_impl.py", line 31, in register
+    if torch._C._dispatch_has_kernel_for_dispatch_key(self.qualname, "Meta"):
+RuntimeError: operator torchvision::nms does not exist
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/conda/envs/verl/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/opt/conda/envs/verl/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/robin/verl/verl/trainer/main_ppo.py", line 23, in <module>
+    from verl.trainer.ppo.ray_trainer import RayPPOTrainer
+  File "/home/robin/verl/verl/trainer/ppo/ray_trainer.py", line 55, in <module>
+    from verl.utils.checkpoint.checkpoint_manager import find_latest_ckpt_path
+  File "/home/robin/verl/verl/utils/checkpoint/checkpoint_manager.py", line 24, in <module>
+    from transformers import PreTrainedTokenizer, ProcessorMixin
+  File "/opt/conda/envs/verl/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 2048, in __getattr__
+    raise ModuleNotFoundError(
+ModuleNotFoundError: Could not import module 'ProcessorMixin'. Are this object's requirements defined correctly?
