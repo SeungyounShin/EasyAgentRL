@@ -1,3 +1,6 @@
+"""
+python search/retriever_server.py --index_path=/raid/channel/robin/e5_Flat.index --corpus_path=/raid/channel/robin/wiki-18.jsonl
+"""
 import json
 import os
 import warnings
@@ -339,7 +342,7 @@ config = Config(
     index_path=args.index_path,
     corpus_path=args.corpus_path,
     retrieval_topk=args.topk,
-    faiss_gpu=True,
+    faiss_gpu=False,
     retrieval_model_path=args.retriever_model,
     retrieval_pooling_method="mean",
     retrieval_query_max_length=256,
