@@ -92,6 +92,12 @@ def count_answer_tags(text):
 
     return opening_tags, closing_tags
 
+def count_thinking_tags(text):
+    opening_tags = text.count("<think>")
+    closing_tags = text.count("</think>")
+
+    return opening_tags, closing_tags
+
 
 def compute_score(solution_str, ground_truth, method="strict", format_score=0.0, score=1.0):
     """The scoring function for exact match (EM).
@@ -105,6 +111,12 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.0,
     """
     answer = extract_solution(solution_str=solution_str)
     open_count, close_count = count_answer_tags(solution_str)
+    open_thinking_count, close_thinking_count = count_thinking_tags(solution_str)
+    if open_thinking_count == 0 and close_thinking_count == 0:
+        return 0
+    if open_thinking_count != close_thinking_count:
+        diff_thinking_count = open_thinking_count - close_thinking_count
+        score -= 0.1 * diff_thinking_count
     do_print = random.randint(1, 64) == 1
 
     if do_print:
@@ -115,6 +127,7 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.0,
         else:
             print("Extracted answer: None!")
         print(f"Solution string: {solution_str}")
+        print(f"thinking count: {open_thinking_count} | {close_thinking_count}")
 
     if answer is None:
         return 0
