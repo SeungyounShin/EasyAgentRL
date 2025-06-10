@@ -93,6 +93,14 @@ def count_answer_tags(text):
     return opening_tags, closing_tags
 
 
+def count_thinking_tags(text: str):
+    """Count <think> and </think> tags in the given text."""
+    opening_tags = text.count("<think>")
+    closing_tags = text.count("</think>")
+
+    return opening_tags, closing_tags
+
+
 def compute_score(solution_str, ground_truth, method="strict", format_score=0.0, score=1.0):
     """The scoring function for exact match (EM).
 
@@ -105,6 +113,9 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.0,
     """
     answer = extract_solution(solution_str=solution_str)
     open_count, close_count = count_answer_tags(solution_str)
+    think_open, think_close = count_thinking_tags(solution_str)
+    has_think = think_open > 0 and think_close > 0
+
     do_print = random.randint(1, 64) == 1
 
     if do_print:
@@ -115,17 +126,19 @@ def compute_score(solution_str, ground_truth, method="strict", format_score=0.0,
         else:
             print("Extracted answer: None!")
         print(f"Solution string: {solution_str}")
+        print(f"thinking count: {think_open} | {think_close}")
 
-    if answer is None:
-        return 0
+    correct = answer is not None and em_check(answer, ground_truth["target"])
+    acc = 1.0 if correct else 0.0
+
+    if correct:
+        reward_val = 1.0
+        if open_count > 10 or close_count > 10:
+            reward_val /= 4
     else:
-        if em_check(answer, ground_truth["target"]):
-            if open_count > 10 or close_count > 10:  # prevent output a lot of </answer>
-                score = score / 4
-                return score
-            return score
-        else:
-            return format_score
+        reward_val = 0.5 if has_think else 0.0
+
+    return {"score": acc, "reward": reward_val}
 
 
 def compute_score_subem(solution_str, ground_truth, method="strict", format_score=0.0, score=1.0):
@@ -139,6 +152,8 @@ def compute_score_subem(solution_str, ground_truth, method="strict", format_scor
         score: the score for the correct answer
     """
     answer = extract_solution(solution_str=solution_str)
+    think_open, think_close = count_thinking_tags(solution_str)
+    has_think = think_open > 0 and think_close > 0
     do_print = random.randint(1, 64) == 1
 
     if do_print:
@@ -146,11 +161,14 @@ def compute_score_subem(solution_str, ground_truth, method="strict", format_scor
         print(f"Golden answers: {ground_truth['target']}")
         print(f"Extracted answer: {answer}")
         print(f"Solution string: {solution_str}")
+        print(f"thinking count: {think_open} | {think_close}")
 
-    if answer is None:
-        return 0
+    correct = answer is not None and subem_check(answer, ground_truth["target"])
+    acc = 1.0 if correct else 0.0
+
+    if correct:
+        reward_val = 1.0
     else:
-        if subem_check(answer, ground_truth["target"]):
-            return score
-        else:
-            return format_score
+        reward_val = 0.5 if has_think else 0.0
+
+    return {"score": acc, "reward": reward_val}

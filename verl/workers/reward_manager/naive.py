@@ -76,7 +76,7 @@ class NaiveRewardManager:
             )
 
             if isinstance(score, dict):
-                reward = score["score"]
+                reward = score.get("reward", score.get("score"))
                 # Store the information including original reward
                 for key, value in score.items():
                     reward_extra_info[key].append(value)
