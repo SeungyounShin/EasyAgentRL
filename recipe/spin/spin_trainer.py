@@ -683,10 +683,13 @@ class RaySPINTrainer:
             scores = reward_tensor.sum(-1).cpu().tolist()
             sample_scores.extend(scores)
 
-            reward_extra_infos_dict["reward"].extend(scores)
             if "reward_extra_info" in result:
                 for key, lst in result["reward_extra_info"].items():
                     reward_extra_infos_dict[key].extend(lst)
+                if "reward" not in result["reward_extra_info"]:
+                    reward_extra_infos_dict["reward"].extend(scores)
+            else:
+                reward_extra_infos_dict["reward"].extend(scores)
 
             data_source_lst.append(test_batch.non_tensor_batch.get("data_source", ["unknown"] * reward_tensor.shape[0]))
 
